@@ -114,7 +114,3 @@ create table facilitator_attends(
 	foreign key (meeting_id) references meeting(id) on delete cascade,
 	foreign key (facilitator_id) references facilitator(id) on delete cascade
 )
-
-/* create an index for the course table using the attributes semester and year */
-create index course_index
-on course(semester, year);
