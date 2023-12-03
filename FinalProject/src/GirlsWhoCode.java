@@ -4,7 +4,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import java.util.Scanner;
 
@@ -71,10 +70,6 @@ public class GirlsWhoCode {
             CallableStatement callableStatement = connection.prepareCall(callStoredProc);) {
 
             int numStudentsWithName = getStudentsWithNameCount(firstName, lastName); 
-            // int countNames = 0; 
-            // while(getStudentsWithNameCount(firstName, lastName).next()) {
-            //     countNames++; 
-            // }
             
             if(numStudentsWithName == 1) {
                 connection.setAutoCommit(false);
@@ -96,7 +91,7 @@ public class GirlsWhoCode {
                 callableStatement2.setString(2, lastName);
                 if(callableStatement2.execute()) {
                     ResultSet allNames = callableStatement2.getResultSet(); 
-                    System.out.println("Student ID : Student Name: ");
+                    System.out.println("\nStudent ID : Student Name: ");
 
                     while(allNames.next()) {
                         System.out.println("" + allNames.getString(1) + " : " + allNames.getString(2) + " " + allNames.getString(3));
@@ -256,6 +251,86 @@ public class GirlsWhoCode {
             e.printStackTrace();
         }
 
+    }
+
+    //TEST TRIGGER 
+        //trigger updates exec member to be 'Co' + [PositionName] if two facilitators try to be added to the same position in the same academic year
+    public void insertExecMember() {
+        String callStoredProc = "{call dbo.insert_new_exec_member(?,?,?)}"; 
+
+        sc = new Scanner(System.in);
+        System.out.println("Enter the following parameters for this use case: ");
+        System.out.println("\tEnter the academic year of that this facilitator will serve on exec: "); 
+        String academicYear = sc.nextLine();
+        //see what facilitators are currently non-exec members for that academic year
+        getAllNonExecMembersForAcademicYear(academicYear);
+        System.out.println("\n\tEnter the ID of the facilitator to be added (non-exec members shows in list above): "); 
+        String facId = sc.nextLine(); 
+        System.out.println("\tEnter the exec role for this facilitator: "); 
+        String role = sc.nextLine(); 
+
+        try (Connection connection = DriverManager.getConnection(connectionUrl);
+            CallableStatement callableStatement = connection.prepareCall(callStoredProc);) {
+            
+            connection.setAutoCommit(false);
+                
+            callableStatement.setString(1, role); 
+            callableStatement.setString(2, facId);
+            callableStatement.setString(3, academicYear);
+
+            callableStatement.execute();
+            connection.commit();
+            System.out.println("Successfully made facilitator with ID " + facId + " to " + role + " for the  " + academicYear + " academic year.");
+            getResultingExecMembers(academicYear);
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //helper for testing trigger to get all non-exec members for the specified academic year
+    private void getAllNonExecMembersForAcademicYear(String academicYear) {
+        String callStoredProc = "{call dbo.list_all_non_exec_members(?)}"; 
+
+        try (Connection connection = DriverManager.getConnection(connectionUrl);
+            CallableStatement callableStatement = connection.prepareCall(callStoredProc);) {
+                            
+            callableStatement.setString(1, academicYear); 
+
+            if(callableStatement.execute()) {
+                System.out.println("\n\tCurrent Facilitators with No Exec Positions for " + academicYear + ": ");
+                System.out.println("\t\tID: Facilitator Name");
+                ResultSet results = callableStatement.getResultSet();
+                while(results.next()) {
+                    System.out.println("\t\t" + results.getString(1) + ": " + results.getString(2) + " " + results.getString(3));
+                } 
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //helper method for trigger that shows trigger updates exec_members correctly
+    private void getResultingExecMembers(String academicYear) {
+        String query = "SELECT * FROM exec_member"; 
+
+        try (Connection connection = DriverManager.getConnection(connectionUrl);
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet results = statement.executeQuery();
+        ) {
+            System.out.println("\n\tCurrent Exec Members for " + academicYear + ": ");
+            System.out.println("\t\tFacilitator ID : Exec Position");
+
+            while(results.next()) {
+                if(results.getString(3).equals(academicYear)) {
+                    System.out.println("\t\t" + results.getString(2) + " : " + results.getString(1));
+                }
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     //helper method for Use Case 2 that sees if there are multiple students with same name
