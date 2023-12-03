@@ -34,13 +34,13 @@ values
 	('Tina', 'Lane', 'senior', 'inactive'),
 	('Ana', 'Perez', 'senior', 'active'),
 	('Franny', 'Fresh', 'freshman', 'active'),
-    ('Anna', 'Smith', 'sophomore', 'active'),
-    ('Emily', 'Cher', 'senior', 'active'),
-    ('Eve', 'Bro', 'sophomore', 'active'),
-    ('Emma', 'Gui', 'senior', 'active'),
-    ('Eliza', 'Kim', 'junior', 'active'),
-    ('Jenny', 'Garcia', 'freshman', 'active'),
-    ('Sarah', 'Johnson', 'sophomore', 'active');
+	('Anna', 'Smith', 'sophomore', 'active'),
+ 	('Emily', 'Cher', 'senior', 'active'),
+	('Eve', 'Bro', 'sophomore', 'active'),
+	('Emma', 'Gui', 'senior', 'active'),
+	('Eliza', 'Kim', 'junior', 'active'),
+	('Jenny', 'Garcia', 'freshman', 'active'),
+	('Sarah', 'Johnson', 'sophomore', 'active');
 
 /* insert into lead_group table */
 insert into lead_group (group_lead_id)
@@ -85,7 +85,7 @@ insert into exec_member (role, facilitator_id, academic_year)
 values
 	('President', 1006, '2023-2024'),
 	('Vice President', 1004, '2023-2024'),
-	('PR Chair', 1005, '2023-2023'),
+	('PR Chair', 1005, '2022-2023'),
 	('President', 1003, '2022-2023'),
 	('Vice President', 1002, '2022-2023'),
 	('PR Chair', 1001, '2022-2023');
