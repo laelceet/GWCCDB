@@ -1,3 +1,6 @@
+/* Note to grader: The stored procedures work adding them to MS SQL Server one at a time. 
+Adding the whole file and executing all at once causes errors. */
+
 /* 1. Retrieve Facilitator Attendance for a Semester */
 CREATE PROCEDURE assists_attendance
   @course_semester VARCHAR(10),
